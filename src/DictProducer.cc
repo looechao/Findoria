@@ -5,6 +5,7 @@
 #include <cctype> //字符相关，例如tolower库
 #include <algorithm>
 #include <string>
+#include <cstddef>  // 包含 size_t 的定义
 
 using std::cout;
 using std::cerr;
@@ -15,6 +16,7 @@ using std::sort;
 using std::ispunct;
 using std::tolower;
 using std::isdigit;
+using std::size_t;
 
 //读取路径下的所有文件中的内容
 string readFileToString(string filePath){
@@ -37,14 +39,13 @@ void DictProducer::showRaw(){
 
 //读入所有原始数据
 void DictProducer::setRaw(){
-    cout << "setRaw data:\n";
     for(auto & ele : this->_files){
         this->_raw.append(readFileToString(ele));
     }
-    cout << "readfile to string success! \n";
+    cout << "setRaw data: readfile to string success! \n";
 }
 
-//数据清洗：大小写转换，标点符号替换
+//英文数据清洗：大小写转换，标点符号替换
 void DictProducer::cleanEnMaterial(){
     for(auto &ch: this->_raw){
         if(ispunct(ch) || isdigit(ch)){
@@ -55,6 +56,47 @@ void DictProducer::cleanEnMaterial(){
     }
     cout << "celanEnMaterial Success!\n";
 }
+
+//中文数据清洗：标点符号替换
+// 检查字符是否是汉字
+bool isChineseCharacter(const std::string& str, size_t pos) {
+    if (pos + 2 >= str.size()) return false; // 需要至少3个字节
+
+    unsigned char c1 = str[pos];
+    unsigned char c2 = str[pos + 1];
+    unsigned char c3 = str[pos + 2];
+
+    // UTF-8 处理
+    if (c1 < 0x80) return false; // ASCII范围内的字符
+
+    // 汉字的 UTF-8 编码范围 (3字节)
+    if (c1 >= 0xE4 && c1 <= 0xE9) {
+        if ((c2 & 0xC0) == 0x80 && (c3 & 0xC0) == 0x80) {
+            return true; // 这范围包含了常用汉字
+        }
+    }
+    return false;
+}
+
+void DictProducer::cleanCnMaterial() {
+    std::string result;
+    size_t pos = 0;
+
+    while (pos < this->_raw.size()) {
+        if (isChineseCharacter(this->_raw, pos)) {
+            result.push_back(this->_raw[pos]);
+            result.push_back(this->_raw[pos + 1]);
+            result.push_back(this->_raw[pos + 2]);
+            pos += 3; // 跳过完整的汉字
+        } else {
+            pos++;
+        }
+    }
+
+    this->_raw = result;
+    std::cout << "cleanCnMaterial Success!\n";
+}
+
 
 //构建词典
 void DictProducer::buildEnDict(){

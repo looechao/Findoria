@@ -45,11 +45,16 @@ void makeEnDict(){
 
 void makeCnDict(){
     SplitTool* cnCuttor = new SplitToolCppJieba();
+    vector<string> cnMaterial = inputFiles("../data/material/chinese");
+    DictProducer& cnDictProducer = DictProducer::getInstance(cnMaterial, cnCuttor);
+    cnDictProducer.setRaw();
+    cnDictProducer.cleanCnMaterial();
+    cnDictProducer.showRaw();
 }
 
 int main()
 {
-    makeEnDict();
+    makeCnDict();
     return 0;
 }
 
