@@ -5,6 +5,7 @@
 #include <set>
 #include <iostream>
 #include <vector>
+#include <utility>
 #include "SplitTool.h"
 
 using std::pair;
@@ -27,6 +28,7 @@ public:
     ~DictProducer() {}
 
     void setRaw();
+    void showRaw();
     void cleanEnMaterial();
     void cleanCnMaterial();
     void buildEnDict();
