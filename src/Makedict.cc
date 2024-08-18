@@ -40,6 +40,7 @@ void makeEnDict(){
     enDictProducer.setRaw();
     enDictProducer.cleanEnMaterial();
     enDictProducer.buildEnDict();
+    enDictProducer.store("../data/dict.dat");
 }
 
 void makeCnDict(){
