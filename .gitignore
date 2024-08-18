@@ -1,0 +1,77 @@
+# 编译生成的二进制文件
+*.exe
+*.out
+*.app
+*.o
+*.a
+*.so
+*.dll
+*.dylib
+
+# 编译时生成的临时文件
+*.d
+*.obj
+*.lo
+*.la
+*.al
+*.libs
+*.exe.manifest
+*.exe.embed.manifest
+
+# 调试符号文件
+*.gch
+*.pch
+*.pdb
+*.ilk
+
+# 生成的静态库和共享库
+*.lib
+*.a
+*.so
+*.dylib
+
+# CMake 生成的临时文件和缓存文件
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+CMakeScripts/
+Testing/
+CTestTestfile.cmake
+install_manifest.txt
+compile_commands.json
+
+# 自动生成的 IDE 文件
+.idea/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.VC.db
+*.VC.VC.opendb
+*.VC.db-wal
+*.VC.db-shm
+*.ncb
+*.opt
+*.log
+*.tlog
+*.vscode/
+
+# 编辑器临时文件
+*~
+*.swp
+*.swo
+*.tmp
+*.bak
+*.old
+*.orig
+
+# 编辑器或 IDE 生成的项目文件
+.vscode/
+.vs/
+*.code-workspace
+
+# 生成的构建目录
+build/
+bin/
+obj/
