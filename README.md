@@ -31,9 +31,11 @@
 
   src/DictProducer: store
 
-- [ ] 中文语料清洗（去除空格和标点符号）
+- [x] 中文语料清洗（去除空格和标点符号）
 
-- [ ] 中文语料词典生成（分割+词典生成）
+  cleanCnMaterial
+
+- [x] 中文语料词典生成（分割+词典生成）
 
 ## File structure
 
