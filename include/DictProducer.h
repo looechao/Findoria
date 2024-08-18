@@ -6,7 +6,12 @@
 #include <iostream>
 #include <vector>
 #include <utility>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
+
 #include "SplitTool.h"
+
 
 using std::pair;
 using std::set;
@@ -34,7 +39,7 @@ public:
     void buildEnDict();
     void buildCnDict();
     void createIndex();
-    void store();
+    void store(const string& filename);
 
 private:
     // 私有构造函数，防止外部实例化
