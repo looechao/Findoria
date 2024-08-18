@@ -40,9 +40,6 @@ int main()
     //英文DictProducer, 用到了Singleton模式，对象的生命周期应该是静态局部变量的生命周期
     DictProducer& enDictProducer = DictProducer::getInstance(enMaterial, enCuttor);
     enDictProducer.setRaw();
-    for(auto & ele : enMaterial){
-        cout << ele << "\n";
-    }
     return 0;
 }
 
