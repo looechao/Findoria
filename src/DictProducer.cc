@@ -1,4 +1,5 @@
 #include "../include/DictProducer.h"
+#include "../include/SplitTool.h"
 #include <fstream>
 #include <sstream>
 #include <iostream>
@@ -18,6 +19,17 @@ using std::tolower;
 using std::isdigit;
 using std::size_t;
 
+
+//查看原始数据
+void DictProducer::showRaw(){
+    cout << this->_raw;
+}
+
+//查看原始数据
+string DictProducer::getRaw(){
+    return this->_raw;
+}
+
 //读取路径下的所有文件中的内容
 string readFileToString(string filePath){
     std::ifstream file(filePath);
@@ -30,11 +42,6 @@ string readFileToString(string filePath){
     oss << file.rdbuf();
     file.close();
     return oss.str();
-}
-
-//查看原始数据
-void DictProducer::showRaw(){
-    cout << this->_raw;
 }
 
 //读入所有原始数据
@@ -133,6 +140,26 @@ void DictProducer::buildEnDict(){
     });
 
     std::cout << "buildEnDict Success!\n";
+}
+
+
+// 构建中文词典
+void DictProducer::buildCnDict(){
+    map<string, int> wordCount;
+    vector<string>result = _cuttor->cut(_raw);
+    for(auto &word : result){
+        // 统计词频
+        ++wordCount[word];
+    }
+        // 将统计结果转换为 vector<pair<string, int>> 格式
+    for (const auto& pair : wordCount) {
+        _dict.push_back(pair);
+    }
+
+    sort(_dict.begin(), _dict.end(), [](const pair<string, int>& a, const pair<string, int>& b){
+        return a.second > b.second;
+    });
+    std::cout << "buildCnDict Success!\n";
 }
 
 // 存储推荐词

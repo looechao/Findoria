@@ -33,6 +33,7 @@ public:
     ~DictProducer() {}
 
     void setRaw();
+    string getRaw();
     void showRaw();
     void cleanEnMaterial();
     void cleanCnMaterial();

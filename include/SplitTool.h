@@ -11,9 +11,9 @@ class SplitTool
 {
 public:
     SplitTool() {}
-    ~SplitTool() {}
+    virtual ~SplitTool() {}
 
-    vector<string> cut();
+    virtual vector<string> cut(string str) = 0;
 
 private:
 };
@@ -22,7 +22,15 @@ private:
 class SplitToolCppJieba 
 :public SplitTool
 {
-    vector<string> cut();
+public:
+    vector<string> cut(string str);
+};
+
+class SplitToolEn 
+:public SplitTool
+{
+public:
+    vector<string> cut(string str);
 };
 
 #endif // __SplitTool_H__
