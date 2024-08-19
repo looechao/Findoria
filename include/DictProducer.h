@@ -12,7 +12,6 @@
 
 #include "SplitTool.h"
 
-
 using std::pair;
 using std::set;
 using std::map;
@@ -39,8 +38,9 @@ public:
     void cleanCnMaterial();
     void buildEnDict();
     void buildCnDict();
-    void createIndex();
-    void store(const string& filename);
+    void createIndex(const string& filename);
+    void storeDict(const string& filename);
+    void storeIndexDict(const string& filename);
 
 private:
     // 私有构造函数，防止外部实例化
@@ -50,7 +50,7 @@ private:
     string _raw;
     vector<string> _files;
     vector<pair<string, int>> _dict;
-    map<string, set<int>> _index;
+    map<string, set<int>> _Index;
     SplitTool* _cuttor;
 };
 

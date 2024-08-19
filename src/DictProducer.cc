@@ -8,16 +8,19 @@
 #include <string>
 #include <cstddef>  // 包含 size_t 的定义
 
+
 using std::cout;
 using std::cerr;
 using std::ostringstream;
 using std::istringstream;
 using std::ofstream;
+using std::ifstream;
+using std::map;
+using std::size_t;
 using std::sort;
 using std::ispunct;
 using std::tolower;
 using std::isdigit;
-using std::size_t;
 
 
 //查看原始数据
@@ -163,7 +166,7 @@ void DictProducer::buildCnDict(){
 }
 
 // 存储推荐词
-void DictProducer::store(const std::string& filename) {
+void DictProducer::storeDict(const string& filename) {
     // 使用 POSIX 的 open 函数打开文件（如果文件存在则追加）
     int fd = open(filename.c_str(), O_WRONLY | O_CREAT | O_APPEND, 0666);
     if (fd < 0) {
@@ -189,4 +192,93 @@ void DictProducer::store(const std::string& filename) {
     // 关闭文件描述符
     close(fd);
     std::cout << "Data written to file: " << filename << "\n";
+}
+
+
+void DictProducer::createIndex(const string& filename) {
+    // 打开文件
+    ifstream file(filename);
+    if (!file.is_open()) {
+        cerr << "Cannot open file: " << filename << "\n";
+        return;
+    }
+
+    string line;
+    int lineIndex = 0; // 记录行索引
+
+    // 逐行读取文件内容
+    while (getline(file, line)) {
+        // 使用字符串流提取单词
+        istringstream iss(line);
+        string word;
+
+        // 逐个单词读取并存储到索引中
+        while (iss >> word) {
+            // 检查单词是英文单词还是中文词语
+            if (isalpha(word[0])) {  // 如果第一个字符是字母，处理为英文单词
+                for (char c : word) {
+                    _Index[string(1, c)].insert(lineIndex); // 拆分成字母并存入索引
+                }
+            } else {  // 处理为中文词语
+                for (size_t i = 0; i < word.size(); ++i) {
+                    // 处理 UTF-8 编码的汉字
+                    // 获取字符的字节长度
+                    size_t charLength = 0;
+                    if ((word[i] & 0x80) == 0) {
+                        charLength = 1; // ASCII字符
+                    } else if ((word[i] & 0xE0) == 0xC0) {
+                        charLength = 2; // 中文字符（2字节）
+                    } else if ((word[i] & 0xF0) == 0xE0) {
+                        charLength = 3; // 中文字符（3字节）
+                    } else if ((word[i] & 0xF8) == 0xF0) {
+                        charLength = 4; // 中文字符（4字节）
+                    } else {
+                        // 无效字符，跳过
+                        charLength = 1; // 默认处理单字节
+                    }
+
+                    // 提取汉字并插入索引
+                    string character = word.substr(i, charLength);
+                    _Index[character].insert(lineIndex);
+                    i += charLength - 1; // 跳过当前字符的字节数
+                }
+            }
+        }
+        lineIndex++; // 行索引递增
+    }
+}
+
+// 存储索引词典
+void DictProducer::storeIndexDict(const string& filename){
+    // 使用 POSIX 的 open 函数打开文件（如果文件存在则追加）
+    int fd = open(filename.c_str(), O_WRONLY | O_CREAT | O_APPEND, 0666);
+    if (fd < 0) {
+        cerr << "Error opening file: " << filename << "\n";
+        perror("Detailed error");
+        return;
+    }
+
+    // 遍历 _Index 并将内容写入文件
+    for (const auto& entry : _Index) {
+        const string& word = entry.first; // 单词或汉字
+        const set<int>& indices = entry.second; // 行索引集合
+
+        // 构建输出字符串
+        ostringstream oss;
+        oss << word; // 添加单词或汉字
+
+        // 添加索引到字符串
+        for (int index : indices) {
+            oss << " " << index; // 用空格分隔
+        }
+
+        oss << "\n"; // 换行
+
+        // 将字符串写入文件
+        string output = oss.str();
+        write(fd, output.c_str(), output.size()); // 写入字符串到文件
+    }
+
+    // 关闭文件
+    close(fd);
 }
