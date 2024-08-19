@@ -40,7 +40,7 @@ void makeEnDict(){
     enDictProducer.setRaw();
     enDictProducer.cleanEnMaterial();
     enDictProducer.buildEnDict();
-    enDictProducer.store("../data/dict.dat");
+    enDictProducer.storeDict("../data/dict.dat");
 }
 
 void makeCnDict(){
@@ -50,11 +50,15 @@ void makeCnDict(){
     cnDictProducer.setRaw();
     cnDictProducer.cleanCnMaterial();
     cnDictProducer.buildCnDict();
-    cnDictProducer.store("../data/dict.dat");
+    cnDictProducer.storeDict("../data/dict.dat");
+    cnDictProducer.createIndex("../data/dict.dat");
+    cnDictProducer.storeIndexDict("../data/dictIndex.dat");
 }
+
 
 int main()
 {
+    makeEnDict();
     makeCnDict();
     return 0;
 }
