@@ -1,3 +1,5 @@
+C++ 网络编程 线程
+
 ## Roadmap
 
 ### Preparation
@@ -35,7 +37,12 @@
 
   cleanCnMaterial
 
-- [x] 中文语料词典生成（分割+词典生成）
+- [x] 中文语料词典生成（分割+词典生成），自动合并进入dict.dat
+
+- [x] 生成并且存储索引文件
+
+  - [x] 读取`vector<pair<string, int>>` 中的每一个单词的所有字符
+  - [x] 存储到dictIndex.dat
 
 ## File structure
 
