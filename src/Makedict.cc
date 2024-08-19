@@ -36,7 +36,7 @@ void makeEnDict(){
     SplitTool* enCuttor = new SplitToolEn();
     vector<string> enMaterial = inputFiles("../data/material/english");
     //英文DictProducer, 用到了Singleton模式，对象的生命周期应该是静态局部变量的生命周期
-    DictProducer& enDictProducer = DictProducer::getInstance(enMaterial, enCuttor);
+    DictProducer enDictProducer = DictProducer(enMaterial, enCuttor);
     enDictProducer.setRaw();
     enDictProducer.cleanEnMaterial();
     enDictProducer.buildEnDict();
@@ -46,7 +46,7 @@ void makeEnDict(){
 void makeCnDict(){
     SplitTool* cnCuttor = new SplitToolCppJieba();
     vector<string> cnMaterial = inputFiles("../data/material/chinese");
-    DictProducer& cnDictProducer = DictProducer::getInstance(cnMaterial, cnCuttor);
+    DictProducer cnDictProducer = DictProducer(cnMaterial, cnCuttor);
     cnDictProducer.setRaw();
     cnDictProducer.cleanCnMaterial();
     cnDictProducer.buildCnDict();
