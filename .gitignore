@@ -34,7 +34,6 @@
 CMakeFiles/
 CMakeCache.txt
 cmake_install.cmake
-Makefile
 CMakeScripts/
 Testing/
 CTestTestfile.cmake
