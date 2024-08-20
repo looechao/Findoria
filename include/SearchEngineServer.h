@@ -3,6 +3,21 @@
 
 #include <workflow/WFFacilities.h>
 #include <wfrest/HttpServer.h>
+#include <vector>
+#include <map>
+#include <set>
+
+using std::vector;
+using std::pair;
+using std::map;
+using std::set;
+using std::string;
+
+class KeyRecomander{
+public:
+    vector<pair<string, int>> _Dict;
+    map<string, set<int>> _Index;
+};
 
 class SearchEngineServer
 {
@@ -29,7 +44,9 @@ private:
 private:
     WFFacilities::WaitGroup _waitGroup;
     wfrest::HttpServer _httpserver;
+    KeyRecomander _wordRecomander;
 };
+
 
 #endif // __SearchEngineServer_H__
        //

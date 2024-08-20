@@ -1,0 +1,15 @@
+# 目标: 生成 bin/main
+bin/main: bin/main.o bin/SearchEngineServer.o
+	g++ bin/main.o bin/SearchEngineServer.o -o bin/main -lwfrest -lworkflow
+
+# 目标：生成 bin/main.o
+bin/main.o: src/main.cc
+	g++ -c src/main.cc -o bin/main.o -I include
+
+# 目标：生成 bin/SearchEngineServer.o
+bin/SearchEngineServer.o: src/SearchEngineServer.cc
+	g++ -c src/SearchEngineServer.cc -o bin/SearchEngineServer.o -I include
+
+# 清理命令
+clean:
+	rm -f bin/*
