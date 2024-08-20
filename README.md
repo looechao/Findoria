@@ -81,9 +81,52 @@ C++ 网络编程 线程
 
 ## Problem
 
-1. 单例模式冲突，即使创建了两个对象，使用的成员函数仍然是最先所创建的对象的
+1. Makefile伪目标，可以一次性生成多个可执行文件
 
-2. Http 请求中的中文是编码过的，需要解码后再处理
+   ```makefile
+   # 伪目标：生成所有可执行文件
+   all: bin/Makedict bin/main
+   
+   # 目标：生成 bin/Makedict
+   bin/Makedict: bin/Makedict.o bin/DictProducer.o bin/SplitTool.o
+           g++ bin/Makedict.o bin/DictProducer.o bin/SplitTool.o -o bin/Makedict -g
+   
+   # 目标：生成 bin/Makedict.o
+   bin/Makedict.o: src/Makedict.cc
+           g++ -c src/Makedict.cc -o bin/Makedict.o -I include
+   
+   # 目标：生成 bin/DictProducer.o
+   bin/DictProducer.o: src/DictProducer.cc
+           g++ -c src/DictProducer.cc -o bin/DictProducer.o -I include
+   
+   # 目标：生成 bin/SplitTool.o
+   bin/SplitTool.o: src/SplitTool.cc
+           g++ -c src/SplitTool.cc -o bin/SplitTool.o -I include
+   
+   # 目标: 生成 bin/main
+   bin/main: bin/main.o bin/SearchEngineServer.o bin/KeyRecomander.o
+           g++ bin/main.o bin/SearchEngineServer.o bin/KeyRecomander.o -o bin/main -lwfrest -lworkflow -g
+   
+   # 目标：生成 bin/main.o
+   bin/main.o: src/main.cc
+           g++ -c src/main.cc -o bin/main.o -I include
+   
+   # 目标：生成 bin/SearchEngineServer.o
+   bin/SearchEngineServer.o: src/SearchEngineServer.cc
+           g++ -c src/SearchEngineServer.cc -o bin/SearchEngineServer.o -I include
+   
+   # 目标：生成 bin/KeyRecomander.o
+   bin/KeyRecomander.o: src/KeyRecomander.cc
+           g++ -c src/KeyRecomander.cc -o bin/KeyRecomander.o -I include
+   
+   # 清理命令
+   clean:
+           rm -f bin/*
+   ```
+
+2. 单例模式冲突，即使创建了两个对象，使用的成员函数仍然是最先所创建的对象的
+
+3. Http 请求中的中文是编码过的，需要解码后再处理
 
    ```c++
    string urlDecode(const std::string &encoded) {
@@ -109,11 +152,27 @@ C++ 网络编程 线程
    }
    ```
 
-3. 排序算法：候选词有`频率`和`最小编辑距离`两个主要的维度，需要选择合适的算法对候选词进行排序
+4. 排序算法：候选词有`频率`和`最小编辑距离`两个主要的维度，需要选择合适的算法对候选词进行排序
 
    ![排序前](./assets/candidateProcess.png)
 
    按照最小编辑距离升序，若最小编辑距离相同，子按照热度的降序排列
 
-   ![排序后](./assets/candidateProcessed.png)
+   ```c++
+   vector<CandidateResult> KeyRecomander::sortCandidates(vector<CandidateResult> candidates) {
+       // 使用自定义比较函数进行排序
+       sort(candidates.begin(), candidates.end(), [](const CandidateResult& a, const CandidateResult& b) {
+           // 按编辑距离升序排序
+           if (a._dist != b._dist) {
+               return a._dist < b._dist; // 低编辑距离排在前面
+           }
+           // 若编辑距离相同，则按频率降序排序
+           return a._freq > b._freq; // 高频率排在前面
+       });
+       return candidates;
+   }
+   ```
 
+5. workflow 动态库问题
+
+   可以将`usr/local/lib64` 中的 .`so` 文件移动到 `/lib64` 当中
