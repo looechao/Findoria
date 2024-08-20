@@ -13,6 +13,29 @@ using std::set;
 using std::size_t;
 using std::string;
 using std::vector;
+using std::cerr;
+
+string urlDecode(const std::string &encoded) {
+    std::ostringstream decoded;
+    decoded.fill('0');
+    std::string::size_type len = encoded.length();
+    for (std::string::size_type i = 0; i < len; ++i) {
+        if (encoded[i] == '%') {
+            if (i + 2 < len) {
+                std::string hex = encoded.substr(i + 1, 2);
+                int value = 0;
+                std::istringstream(hex) >> std::hex >> value;
+                decoded << static_cast<char>(value);
+                i += 2;
+            }
+        } else if (encoded[i] == '+') {
+            decoded << ' ';
+        } else {
+            decoded << encoded[i];
+        }
+    }
+    return decoded.str();
+}
 
 void SearchEngineServer::start(unsigned short port)
 {
@@ -31,6 +54,7 @@ void SearchEngineServer::start(unsigned short port)
 void SearchEngineServer::loadModules()
 {
     loadDictionaryData(); // 加载词典和索引数据
+    loadDictionaryModule();
 }
 
 void SearchEngineServer::loadDictionaryData()
@@ -83,7 +107,18 @@ void SearchEngineServer::loadWebPageData() {}
 void SearchEngineServer::handle_webpage_search(const wfrest::HttpReq* req, wfrest::HttpResp* resp, SeriesWork* series) {}
 
 
-void SearchEngineServer::handle_dictionary_search(const wfrest::HttpReq* req, wfrest::HttpResp* resp, SeriesWork* series) {}
+void SearchEngineServer::handle_dictionary_search(const wfrest::HttpReq* req, wfrest::HttpResp* resp, SeriesWork* series) {
+    string encoded_query = req->query("wd");
+    string decoded_query = urlDecode(encoded_query);
+    cout <<  "decoded: " << decoded_query << "\n";
+
+    if(decoded_query.empty()){
+        cerr << "Missing query parameter 'wd' \n";
+        return;
+    }
+    vector<string> splitedQuery = _wordRecomander.split_query(decoded_query);
+    
+}
 
 
 void SearchEngineServer::loadDictionaryModule()
