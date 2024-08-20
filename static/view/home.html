@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Goooogle</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+
+        header {
+            background: #007bff;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        main {
+            padding: 20px;
+        }
+
+        .search-bar {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .search-bar input[type="text"] {
+            width: 60%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .search-bar button {
+            padding: 10px 15px;
+            border: none;
+            background: #007bff;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .search-bar button:hover {
+            background: #0056b3;
+        }
+
+        .results {
+            margin-top: 20px;
+        }
+
+        .result-item {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 10px;
+            transition: background 0.3s;
+        }
+
+        .result-item:hover {
+            background: #f1f1f1;
+        }
+
+        .result-title {
+            font-size: 18px;
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        .result-title:hover {
+            text-decoration: underline;
+        }
+
+        .result-description {
+            font-size: 14px;
+            color: #666;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>Goooogle</h1>
+    </header>
+
+    <main>
+        <div class="search-bar">
+            <input type="text" id="search-input" placeholder="请输入搜索内容..." oninput="performRecommend()">
+            <button onclick="performRecommend()">搜索</button>
+        </div>
+
+        <div class="results" id="results"></div>
+    </main>
+
+    <script>
+        function performRecommend() {
+            const query = document.getElementById('search-input').value.trim();
+            const resultsContainer = document.getElementById('results');
+            resultsContainer.innerHTML = ''; // 清空之前的结果
+
+            // 模拟 AJAX 请求
+            if (query) {
+                console.log(`发送请求，查询内容: ${query}`); // 调试信息
+                // 发送实际的 AJAX 请求
+                fetch(`http://192.168.31.128:1234/search/dictionary?wd=${encodeURIComponent(query)}`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('网络响应异常');
+                        }
+                        return response.json(); // 假设服务器返回 JSON 格式
+                    })
+                    .then(data => {
+                        console.log('返回的数据:', data); // 调试信息
+                        // 清空之前的结果
+                        resultsContainer.innerHTML = '';
+
+                        // 处理并显示搜索结果
+                        if (data.words && data.words.length > 0) {
+                            data.words.forEach(word => {
+                                const item = document.createElement('div');
+                                item.className = 'result-item';
+                                item.innerHTML = `
+                        <p class="result-title">${word}</p>
+                    `;
+                                resultsContainer.appendChild(item);
+                            });
+                        } else {
+                            resultsContainer.innerHTML = '<p>没有结果</p>';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('发生错误:', error);
+                        resultsContainer.innerHTML = '<p>发生错误，请重试。</p>';
+                    });
+            }
+        }
+    </script>
+
+</body>
+
+</html>

@@ -25,6 +25,7 @@ public:
 
 private:
     //模块化的设计方式
+    void loadStaticSource();
     void loadDictionaryData();
     void loadWebPageData();
     void loadDictionaryModule();

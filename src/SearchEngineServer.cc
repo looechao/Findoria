@@ -2,6 +2,7 @@
 #include <fstream>
 #include <sstream>
 
+#include "../include/nlohmann/json.hpp"
 #include "../include/SearchEngineServer.h"
 
 using std::cout;
@@ -54,7 +55,14 @@ void SearchEngineServer::start(unsigned short port)
 void SearchEngineServer::loadModules()
 {
     loadDictionaryData(); // 加载词典和索引数据
+    loadStaticSource(); // 加载静态资源
     loadDictionaryModule();
+}
+
+
+void SearchEngineServer::loadStaticSource(){
+    _httpserver.GET("/home", [](const wfrest::HttpReq *, wfrest::HttpResp *resp)
+    { resp->File("../static/view/home.html"); });
 }
 
 void SearchEngineServer::loadDictionaryData()
@@ -117,7 +125,14 @@ void SearchEngineServer::handle_dictionary_search(const wfrest::HttpReq* req, wf
         return;
     }
     vector<string> splitedQuery = _wordRecomander.split_query(decoded_query);
-    
+    vector<CandidateResult> recomandWord = _wordRecomander.generateCandidates(splitedQuery, decoded_query);
+    recomandWord = _wordRecomander.sortCandidates(recomandWord);
+    nlohmann::json jsonResponse;
+    for(auto &it : recomandWord){
+        jsonResponse["words"].push_back(it._word); // 添加 word 到 JSON 数组
+        //cout << "recomandWord: " << it._word << " freq:" << it._freq << " editDistance: "<< it._dist << "\n";
+    }
+    resp->String(jsonResponse.dump()); // 将 JSON 对象转换为字符串并写入响应
 }
 
 

@@ -11,6 +11,18 @@ using std::vector;
 using std::map;
 using std::set;
 using std::string;
+using std::size_t;
+
+class CandidateResult{
+public:
+    // 可以添加构造函数以便于初始化
+    CandidateResult(const string& word = "", int freq = 0, int dist = 0)
+        : _word(word), _freq(freq), _dist(dist) {}
+
+    string _word;
+    int _freq;
+    int _dist;
+};
 
 class KeyRecomander {
 public:
@@ -27,9 +39,13 @@ public:
     vector<pair<string, int>> _Dict;
     map<string, set<int>> _Index;
 
+    //结果
+    vector<CandidateResult> _recomandWord;
+
+
     //生成候选词
-    // vector<string> generateCandidates(vector<string> splited_words);
-    // vector<string> sort(vector<string> recomandation);
+    vector<CandidateResult> generateCandidates(vector<string> splited_words, string query);
+    vector<CandidateResult> sortCandidates(vector<CandidateResult> candidates);  //用最小编辑距离进行排序
     vector<string> split_query(string query);
 
 private:
