@@ -22,7 +22,29 @@ string getElementText(XMLElement *element, const char *name)
     return "";
 }
 
-void PagelibProcessor::readData()
+// Function to remove HTML tags from a string
+string removeHTMLTags(const string &input)
+{
+    regex htmlTagPattern("<.*?>");
+    return regex_replace(input, htmlTagPattern, "");
+}
+
+// Function to remove all whitespace characters
+string removeWhitespace(const string &str)
+{
+    string result;
+    result.reserve(str.size());
+    for (char c : str)
+    {
+        if (!isspace(static_cast<unsigned char>(c)))
+        {
+            result.push_back(c);
+        }
+    }
+    return result;
+}
+
+void PagelibProcessor::storeRawOnDisk(const string &filename)
 {
     DIR *dir;
     struct dirent *entry;
@@ -34,9 +56,20 @@ void PagelibProcessor::readData()
         return;
     }
 
+    // 存储位置
+    // doc id;
+    int i = 0;
+    ofstream outFile(filename);
+    if (!outFile.is_open())
+    {
+        cerr << "Error: Could not open file " << filename << " for writing." << "\n";
+        return;
+    }
+
     // 遍历目录中的文件
     while ((entry = readdir(dir)) != nullptr)
     {
+        ++i; // docid从1开始计数
         string fileName = entry->d_name;
         if (fileName != "." && fileName != ".." && fileName.substr(fileName.find_last_of(".") + 1) == "xml")
         {
@@ -70,73 +103,30 @@ void PagelibProcessor::readData()
                 Item item;
                 item.title = getElementText(itemElement, "title");
                 item.link = getElementText(itemElement, "link");
+                // 读取description并清洗description
                 item.description = getElementText(itemElement, "description");
+                item.description = removeHTMLTags(item.description);
+                item.description = removeWhitespace(item.description);
+                // 读取content并清洗content
                 item.content = getElementText(itemElement, "content");
+                item.content = removeHTMLTags(item.content);
+                item.content = removeWhitespace(item.content);
 
-                _cleandata.emplace_back(item);
+                //_cleandata.emplace_back(item);放弃这个数据结构，直接写文件
+                outFile << "<doc>\n";
+                outFile << "    <docid>" << i + 1 << "</docid>\n"; // Assuming docid starts from 1
+                outFile << "    <title>" << item.title << "</title>\n";
+                outFile << "    <link>" << item.link << "</link>\n";
+                outFile << "    <description>" << item.description << "</description>\n";
+                outFile << "    <content>" << item.content << "</content>\n";
+                outFile << "</doc>\n";
+
                 itemElement = itemElement->NextSiblingElement("item");
             }
         }
     }
-
+    //关掉路径，和目标存储文件
     closedir(dir);
-}
-
-// Function to remove HTML tags from a string
-string removeHTMLTags(const string &input)
-{
-    regex htmlTagPattern("<.*?>");
-    return regex_replace(input, htmlTagPattern, "");
-}
-
-// Function to remove all whitespace characters
-string removeWhitespace(const string &str)
-{
-    string result;
-    result.reserve(str.size());
-    for (char c : str)
-    {
-        if (!isspace(static_cast<unsigned char>(c)))
-        {
-            result.push_back(c);
-        }
-    }
-    return result;
-}
-
-// Method to clean data
-void PagelibProcessor::cleanData()
-{
-    cout << "Cleaning data\n";
-    for (Item &item : _cleandata)
-    {
-        item.description = removeHTMLTags(item.description);
-        item.description = removeWhitespace(item.description);
-    }
-    cout << "Data successfully cleaned up!\n";
-}
-
-void PagelibProcessor::storeOnDisk(const string &filename)
-{
-    ofstream outFile(filename);
-    if (!outFile.is_open())
-    {
-        cerr << "Error: Could not open file " << filename << " for writing." << "\n";
-        return;
-    }
-
-    for (size_t i = 0; i < _cleandata.size(); ++i)
-    {
-        const Item &item = _cleandata[i];
-        outFile << "<doc>\n";
-        outFile << "    <docid>" << i + 1 << "</docid>\n"; // Assuming docid starts from 1
-        outFile << "    <title>" << item.title << "</title>\n";
-        outFile << "    <link>" << item.link << "</link>\n";
-        outFile << "    <description>" << item.description << "</description>\n";
-        outFile << "    <content>" << item.content << "</content>\n";
-        outFile << "</doc>\n";
-    }
-
     outFile.close();
     if (outFile.fail())
     {

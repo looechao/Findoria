@@ -9,11 +9,8 @@ using std::cout;
 int main()
 {
     string path = "../data/material/web";
-    vector<Item> cleandata;
-    PagelibProcessor pagelibProcessor(path, cleandata);
-    pagelibProcessor.readData();
-    pagelibProcessor.cleanData();
-    pagelibProcessor.storeOnDisk("../data/Pagelib.dat");
+    PagelibProcessor pagelibProcessor(path);
+    pagelibProcessor.storeRawOnDisk("../data/RawPagelib.dat");
     return 0;
 }
 

@@ -3,15 +3,20 @@
 
 #include "tinyxml2.h"
 
-#include <iostream>
-#include <vector>
 #include <dirent.h>
 #include <sys/stat.h>
+#include <unordered_map>
+#include <iostream>
+#include <vector>
 #include <fstream>
+#include <map>
 
 using std::string;
 using std::vector;
+using std::pair;
 using std::cout;
+using std::unordered_map;
+using std::map;
 
 class Item{
 public:
@@ -31,22 +36,24 @@ public:
 class PagelibProcessor
 {
 public:
-    PagelibProcessor(string path, vector<Item> result)
+    PagelibProcessor(string path)
     :_directory(path)
-    ,_cleandata(result)
     {}
 
     PagelibProcessor() {}
     ~PagelibProcessor() {}
     
-    void readData();
-    void cleanData();
-    void cutRedundantPage();  //起到parse的作用，并且清除多余的内容
-    void buildInvertIndexMap();
-    void storeOnDisk(const string& filename);
+
+    void storeRawOnDisk(const string& filename);
+    void cutRedundantPage(const string& filename);  //页面去重，simhash算法  
+    void createOffsetlib(); //构建页面偏移库
+    void buildInvertIndexMap(); //构建倒排索引库
+    void storeOffset(const string& filename);
+    void storeWebIndex(const string& filename);
 private:
     string _directory;
-    vector<Item> _cleandata;
+    unordered_map<int, pair<int, int>> _offset;
+    unordered_map<int, pair<int, int>> _invertIndex;
 };
 
 #endif // __PagelibProcessor_H__
