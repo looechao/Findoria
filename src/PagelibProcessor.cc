@@ -69,7 +69,6 @@ void PagelibProcessor::storeRawOnDisk(const string &filename)
     // 遍历目录中的文件
     while ((entry = readdir(dir)) != nullptr)
     {
-        ++i; // docid从1开始计数
         string fileName = entry->d_name;
         if (fileName != "." && fileName != ".." && fileName.substr(fileName.find_last_of(".") + 1) == "xml")
         {
@@ -111,7 +110,6 @@ void PagelibProcessor::storeRawOnDisk(const string &filename)
                 item.content = getElementText(itemElement, "content");
                 item.content = removeHTMLTags(item.content);
                 item.content = removeWhitespace(item.content);
-
                 //_cleandata.emplace_back(item);放弃这个数据结构，直接写文件
                 outFile << "<doc>\n";
                 outFile << "    <docid>" << i + 1 << "</docid>\n"; // Assuming docid starts from 1
@@ -120,7 +118,7 @@ void PagelibProcessor::storeRawOnDisk(const string &filename)
                 outFile << "    <description>" << item.description << "</description>\n";
                 outFile << "    <content>" << item.content << "</content>\n";
                 outFile << "</doc>\n";
-
+                i++; // docid从1开始计数
                 itemElement = itemElement->NextSiblingElement("item");
             }
         }
@@ -134,6 +132,6 @@ void PagelibProcessor::storeRawOnDisk(const string &filename)
     }
     else
     {
-        cout << "Data successfully written to " << filename << "." << "\n";
+        cout << "All raw Data successfully written to " << filename << "." << "\n";
     }
 }
