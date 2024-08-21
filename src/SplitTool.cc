@@ -4,11 +4,11 @@
 using std::cout;
 using std::string;
 
-const char* const DICT_PATH = "../include/dict/jieba.dict.utf8";
-const char* const HMM_PATH = "../include/dict/hmm_model.utf8";
-const char* const USER_DICT_PATH = "../include/dict/user.dict.utf8";
-const char* const IDF_PATH = "../include/dict/idf.utf8";
-const char* const STOP_WORD_PATH = "../include/dict/stop_words.utf8";
+const char* const DICT_PATH = "../include/cppjieba/dict/jieba.dict.utf8";
+const char* const HMM_PATH = "../include/cppjieba/dict/hmm_model.utf8";
+const char* const USER_DICT_PATH = "../include/cppjieba/dict/user.dict.utf8";
+const char* const IDF_PATH = "../include/cppjieba/dict/idf.utf8";
+const char* const STOP_WORD_PATH = "../include/cppjieba/dict/stop_words.utf8";
 
 vector<string> SplitToolCppJieba::cut(string str){
       cppjieba::Jieba jieba(DICT_PATH,

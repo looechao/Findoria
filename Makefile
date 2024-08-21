@@ -1,5 +1,5 @@
 # 伪目标：生成所有可执行文件
-all: bin/Makedict bin/main bin/Makeweb
+all: bin/Makedict bin/main bin/MakePagelib
 
 # 目标：生成 bin/Makedict
 bin/Makedict: bin/Makedict.o bin/DictProducer.o bin/SplitTool.o
@@ -37,13 +37,13 @@ bin/KeyRecomander.o: src/KeyRecomander.cc
 
 
 
-# 目标：生成 bin/Makeweb
-bin/Makeweb: bin/Makeweb.o bin/PagelibProcessor.o bin/tinyxml2.o
-	g++ bin/Makeweb.o bin/PagelibProcessor.o bin/tinyxml2.o -o bin/Makeweb -g
+# 目标：生成 bin/MakePagelib
+bin/MakePagelib: bin/MakePagelib.o bin/PagelibProcessor.o bin/tinyxml2.o
+	g++ bin/MakePagelib.o bin/PagelibProcessor.o bin/tinyxml2.o -o bin/MakePagelib -g
 
-# 目标：生成 bin/Makeweb.o
-bin/Makeweb.o: src/Makeweb.cc
-	g++ -c src/Makeweb.cc -o bin/Makeweb.o -I include
+# 目标：生成 bin/MakePagelib.o
+bin/MakePagelib.o: src/MakePagelib.cc
+	g++ -c src/MakePagelib.cc -o bin/MakePagelib.o -I include
 
 # 目标：生成 bin/PagelibProcessor.o
 bin/PagelibProcessor.o: src/PagelibProcessor.cc
@@ -52,6 +52,8 @@ bin/PagelibProcessor.o: src/PagelibProcessor.cc
 # 目标：生成 bin/tinyxml2.o
 bin/tinyxml2.o: src/tinyxml2.cpp
 	g++ -c src/tinyxml2.cpp -o bin/tinyxml2.o -I include
+
+
 
 # 清理命令
 clean:
