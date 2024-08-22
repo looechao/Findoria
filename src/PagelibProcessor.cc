@@ -506,17 +506,11 @@ void PagelibProcessor::createOffsetlib(const string &src)
     {
         if (line.find("<doc>") != string::npos)
         {
+            docid++;
             inDoc = true;
             docStartPos = infile.tellg();
             docStartPos -= line.size() + 1; // 减去当前行的长度和换行符
             continue;
-        }
-
-        if (inDoc && line.find("<docid>") != string::npos)
-        {
-            auto startPos = line.find("<docid>") + 7;
-            auto endPos = line.find("</docid>");
-            docid = stoi(line.substr(startPos, endPos - startPos));
         }
 
         if (line.find("</doc>") != string::npos)
@@ -532,30 +526,25 @@ void PagelibProcessor::createOffsetlib(const string &src)
     infile.close();
 }
 
-void PagelibProcessor::storeOffset(const string &filename)
-{
+void PagelibProcessor::storeOffset(const string &filename) {
     cout << "Storing offset\n";
-    ofstream outfile(filename, std::ios::binary);
-    if (!outfile.is_open())
-    {
+    ofstream outfile(filename);
+    if (!outfile.is_open()) {
         cerr << "Unable to open file for writing: " << filename << "\n";
         return;
     }
 
     // 写入map的大小
     size_t size = _offset.size();
-    outfile.write(reinterpret_cast<const char *>(&size), sizeof(size));
+    outfile << size << "\n"; // 使用文本方式写入大小
 
     // 逐个写入map的内容
-    for (const auto &[docid, offsetPair] : _offset)
-    {
-        outfile.write(reinterpret_cast<const char *>(&docid), sizeof(docid));
-        outfile.write(reinterpret_cast<const char *>(&offsetPair.first), sizeof(offsetPair.first));
-        outfile.write(reinterpret_cast<const char *>(&offsetPair.second), sizeof(offsetPair.second));
+    for (const auto &[docid, offsetPair] : _offset) {
+        outfile << docid << " " << offsetPair.first << " " << offsetPair.second << "\n";
     }
 
     outfile.close();
-    cout << "Offset is stored Successfully\n";
+    cout << "Offset is stored successfully\n";
 }
 
 // 测试功能，通过offset 找到文章内容

@@ -20,8 +20,8 @@ bin/SplitTool.o: src/SplitTool.cc
 
 
 # 目标: 生成 bin/main
-bin/main: bin/main.o bin/SearchEngineServer.o bin/KeyRecomander.o
-	g++ bin/main.o bin/SearchEngineServer.o bin/KeyRecomander.o -o bin/main -lwfrest -lworkflow -g
+bin/main: bin/main.o bin/SearchEngineServer.o bin/KeyRecomander.o bin/WebPageSearcher.o
+	g++ bin/main.o bin/SearchEngineServer.o bin/KeyRecomander.o bin/WebPageSearcher.o -o bin/main -lwfrest -lworkflow -g
 
 # 目标：生成 bin/main.o
 bin/main.o: src/main.cc
@@ -35,6 +35,9 @@ bin/SearchEngineServer.o: src/SearchEngineServer.cc
 bin/KeyRecomander.o: src/KeyRecomander.cc
 	g++ -c src/KeyRecomander.cc -o bin/KeyRecomander.o -I include
 
+# 目标：生成 bin/WebPageSearcher.o
+bin/WebPageSearcher.o: src/WebPageSearcher.cc
+	g++ -c src/WebPageSearcher.cc -o bin/WebPageSearcher.o -I include
 
 
 # 目标：生成 bin/MakePagelib

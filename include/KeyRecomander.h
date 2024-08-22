@@ -35,18 +35,24 @@ public:
     KeyRecomander(const KeyRecomander&) = delete;
     KeyRecomander& operator=(const KeyRecomander&) = delete;
 
+    ~KeyRecomander() {}
+
     // 词典
     vector<pair<string, int>> _Dict;
     map<string, set<int>> _Index;
-
+    
     //结果
     vector<CandidateResult> _recomandWord;
 
+    void loadDict(const string& filename);
+    void loadIndex(const string& filename);
 
     //生成候选词
     vector<CandidateResult> generateCandidates(vector<string> splited_words, string query);
     vector<CandidateResult> sortCandidates(vector<CandidateResult> candidates);  //用最小编辑距离进行排序
     vector<string> split_query(string query);
+    
+    
 
 private:
     // 私有构造函数

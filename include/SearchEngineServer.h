@@ -5,6 +5,7 @@
 #include <wfrest/HttpServer.h>
 
 #include "../include/KeyRecomander.h"
+#include "../include/WebPageSearcher.h"
 
 using std::vector;
 using std::pair;
@@ -39,6 +40,7 @@ private:
     WFFacilities::WaitGroup _waitGroup;
     wfrest::HttpServer _httpserver;
     KeyRecomander& _wordRecomander = KeyRecomander::getInstance(); // 使用单例
+    WebPageSearcher& _webPageSearcher = WebPageSearcher::getInstance(); //使用单例
 };
 
 
