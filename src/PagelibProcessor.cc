@@ -332,7 +332,9 @@ void PagelibProcessor::cutRedundantPage(const string &src, const string &des)
 }
 
 
-
+void PagelibProcessor::createOffsetlib(){
+    
+}
 
 
 // 开始计算simhash对文章去重 这个方法会卡死，内存占用过高
