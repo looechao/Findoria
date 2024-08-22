@@ -18,6 +18,7 @@ namespace simhash
             {}
             ~Simhasher(){};
 
+
             bool extract(const string& text, vector<pair<string,double> > & res, size_t topN) const
             {
                 _extractor.Extract(text, res, topN);

@@ -38,8 +38,8 @@ bin/KeyRecomander.o: src/KeyRecomander.cc
 
 
 # 目标：生成 bin/MakePagelib
-bin/MakePagelib: bin/MakePagelib.o bin/PagelibProcessor.o bin/tinyxml2.o
-	g++ bin/MakePagelib.o bin/PagelibProcessor.o bin/tinyxml2.o -o bin/MakePagelib -g
+bin/MakePagelib: bin/MakePagelib.o bin/PagelibProcessor.o bin/tinyxml2.o bin/SplitTool.o
+	g++ bin/MakePagelib.o bin/PagelibProcessor.o bin/tinyxml2.o bin/SplitTool.o -o bin/MakePagelib -g
 
 # 目标：生成 bin/MakePagelib.o
 bin/MakePagelib.o: src/MakePagelib.cc
@@ -52,7 +52,6 @@ bin/PagelibProcessor.o: src/PagelibProcessor.cc
 # 目标：生成 bin/tinyxml2.o
 bin/tinyxml2.o: src/tinyxml2.cpp
 	g++ -c src/tinyxml2.cpp -o bin/tinyxml2.o -I include
-
 
 
 # 清理命令
