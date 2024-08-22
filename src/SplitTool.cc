@@ -22,7 +22,8 @@ vector<string> SplitToolCppJieba::cut(string str){
   string result;
 
   jieba.Cut(s, words, true);
-  cout << limonp::Join(words.begin(), words.end(), " ") << "\n";
+  //打印分词结果
+  //cout << limonp::Join(words.begin(), words.end(), " ") << "\n";
   return words;
 }
 

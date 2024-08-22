@@ -56,8 +56,8 @@ public:
 private:
     string _directory;
     vector<uint64_t> _simhasheLib;  //simhash
-    unordered_map<int, pair<int, int>> _offset;
-    unordered_map<int, pair<int, int>> _invertIndex;
+    unordered_map<int, pair<int, int>> _offset;  //页面偏移库
+    unordered_map<int, pair<int, int>> _invertIndex;  //倒排索引库
 };
 
 #endif // __PagelibProcessor_H__
