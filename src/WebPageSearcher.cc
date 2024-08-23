@@ -304,3 +304,34 @@ vector<pair<int, double>> WebPageSearcher::rankDocs(set<int> docs, unordered_map
     }
     return docSimilarities;
 }
+
+// using json = nlohmann::json;
+// using namespace tinyxml2;
+// json convertXmlToJson(const string &xmlContent) {
+//     XMLDocument doc;
+//     doc.Parse(xmlContent.c_str());
+
+//     XMLElement *docElement = doc.FirstChildElement("doc");
+//     if (!docElement) {
+//         cerr << "Invalid XML format\n";
+//         return json();
+//     }
+
+//     json jsonResponse;
+
+//     // 提取每个字段
+//     const char *docid = docElement->FirstChildElement("docid")->GetText();
+//     const char *title = docElement->FirstChildElement("title")->GetText();
+//     const char *link = docElement->FirstChildElement("link")->GetText();
+//     const char *description = docElement->FirstChildElement("description")->GetText();
+//     const char *content = docElement->FirstChildElement("content")->GetText();
+
+//     // 构造JSON对象
+//     jsonResponse["docid"] = docid ? docid : "";
+//     jsonResponse["title"] = title ? title : "";
+//     jsonResponse["link"] = link ? link : "";
+//     jsonResponse["description"] = description ? description : "";
+//     jsonResponse["content"] = content ? content : "";
+
+//     return jsonResponse;
+// }

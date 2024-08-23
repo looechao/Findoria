@@ -1,6 +1,8 @@
 #ifndef __WebPageSearcher_H__
 #define __WebPageSearcher_H__
 #include "SplitTool.h"
+#include "tinyxml2.h"
+
 
 #include <iostream>
 #include <unordered_map>
@@ -14,6 +16,7 @@ using std::set;
 using std::string;
 using std::unordered_map;
 using std::vector;
+
 
 class WebPageSearcher
 {
@@ -46,6 +49,7 @@ public:
     unordered_map<string, double> calculateTFIDF(const vector<string> &terms, int totalDocs);
     double calculateCosineSimilarity(int docId, const unordered_map<string, double>& queryWeights);
     vector<pair<int, double>> rankDocs(set<int> docs, unordered_map<string, double>& queryWeights);
+
 private:
     // 私有构造函数
     WebPageSearcher() {}

@@ -1,11 +1,13 @@
 #ifndef __SearchEngineServer_H__
 #define __SearchEngineServer_H__
 
-#include <workflow/WFFacilities.h>
-#include <wfrest/HttpServer.h>
-
 #include "../include/KeyRecomander.h"
 #include "../include/WebPageSearcher.h"
+
+#include <workflow/WFFacilities.h>
+#include <wfrest/HttpServer.h>
+#include "tinyxml2.h"
+
 
 using std::vector;
 using std::pair;
