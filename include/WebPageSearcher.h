@@ -1,15 +1,18 @@
 #ifndef __WebPageSearcher_H__
 #define __WebPageSearcher_H__
+#include "SplitTool.h"
 
 #include <iostream>
 #include <unordered_map>
 #include <utility>
 #include <set>
+#include <vector>
 
 using std::unordered_map;
 using std::pair;
 using std::set;
 using std::string;
+using std::vector;
 
 class WebPageSearcher
 {
@@ -35,7 +38,8 @@ public:
     string getDocContent(const string &src, int docid, unordered_map<int, pair<int, int>> offset);
 
     void loadInvertIndex(const string& filename);
-
+    vector<string> splitSentence(const string& sentence);
+    set<int> queryDocuments(const string& sentence);
 private:
     // 私有构造函数
     WebPageSearcher() {}

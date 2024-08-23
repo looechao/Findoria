@@ -98,6 +98,13 @@ void SearchEngineServer::handle_webpage_search(const wfrest::HttpReq *req, wfres
         cerr << "Missing query parameter 'sentence' \n";
         return;
     }
+
+    set<int> docs = _webPageSearcher.queryDocuments(decoded_query);
+
+    for(auto &it : docs){
+        cout << it << " ";
+    }
+    cout << "\n";
 }
 
 void SearchEngineServer::handle_dictionary_search(const wfrest::HttpReq *req, wfrest::HttpResp *resp, SeriesWork *series)
