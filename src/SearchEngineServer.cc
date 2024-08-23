@@ -100,10 +100,12 @@ void SearchEngineServer::handle_webpage_search(const wfrest::HttpReq *req, wfres
     }
 
     set<int> docs = _webPageSearcher.queryDocuments(decoded_query);
-
-    for(auto &it : docs){
-        cout << it << " ";
+    unordered_map<string, double> queryWeights = _webPageSearcher.calculateTFIDF(_webPageSearcher.splitSentence(decoded_query), docs.size()); 
+    for(auto &word : queryWeights){
+        cout << "word: " << word.first << " weight: " << word.second << " \n";
     }
+    
+    vector<pair<int, double>> rankedDocs = _webPageSearcher.rankDocs(docs, queryWeights);
     cout << "\n";
 }
 
