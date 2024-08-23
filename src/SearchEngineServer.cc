@@ -114,16 +114,25 @@ void SearchEngineServer::handle_webpage_search(const wfrest::HttpReq *req, wfres
         rankedDocs.resize(10);
     }
     nlohmann::json jsonResponse;
-    cout << "webpage: \n";
-    for (auto &doc : rankedDocs)
+    nlohmann::json documentsArray;
+    int i = 0;
+    cout << "test\n";
+    string webContent = _webPageSearcher.getDocContent("../data/Pagelib.dat", 3606, _webPageSearcher._offset);
+    XMLDocument xmlDoc;
+    xmlDoc.Parse(webContent.c_str());
+    XMLElement *docElement = xmlDoc.RootElement();
+    cout << "test done!";
+    for(auto &doc : rankedDocs)
     {
         string webContent = _webPageSearcher.getDocContent("../data/Pagelib.dat", doc.first, _webPageSearcher._offset);
         XMLDocument xmlDoc;
         xmlDoc.Parse(webContent.c_str());
-        XMLElement *docElement = xmlDoc.FirstChildElement("doc");
+        XMLElement *docElement = xmlDoc.RootElement();
+        i++;
         if (!docElement)
         {
-            cerr << "Invalid XML format\n";
+            cerr << "Invalid XML format \n"
+                 << i << "\n";
         }
         const char *docid = docElement->FirstChildElement("docid")->GetText();
         const char *title = docElement->FirstChildElement("title")->GetText();
@@ -132,13 +141,18 @@ void SearchEngineServer::handle_webpage_search(const wfrest::HttpReq *req, wfres
         const char *content = docElement->FirstChildElement("content")->GetText();
 
         // 构造JSON对象
-        jsonResponse["docid"] = docid ? docid : "";
-        jsonResponse["title"] = title ? title : "";
-        jsonResponse["link"] = link ? link : "";
-        jsonResponse["description"] = description ? description : "";
-        jsonResponse["content"] = content ? content : "";
-        resp->Json(jsonResponse.dump());
+        nlohmann::json document;
+        document["docid"] = docid ? docid : "";
+        document["title"] = title ? title : "";
+        document["link"] = link ? link : "";
+        document["description"] = description ? description : "";
+        document["content"] = content ? content : "";
+        documentsArray.push_back(document); // 添加到文档数组中
     }
+
+    jsonResponse["documents"] = documentsArray; // 将文档数组添加到响应中
+    // 一次性发送完整的 JSON 响应
+    resp->Json(jsonResponse.dump());
     cout << "\n";
 }
 

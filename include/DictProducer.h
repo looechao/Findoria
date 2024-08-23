@@ -44,8 +44,8 @@ public:
 private:
     string _raw;
     vector<string> _files;
-    vector<pair<string, int>> _Dict;
-    map<string, set<int>> _Index;
+    vector<pair<string, int>> _Dict; 
+    map<string, set<int>> _Index;  //通过字母和汉字找到词典中对应的包含它的词语
     SplitTool* _cuttor;
 };
 

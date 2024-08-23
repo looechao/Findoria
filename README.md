@@ -90,43 +90,20 @@ C++ 网络编程 线程
 
 ### Model2 Online Part
 
-- [ ] 预热，将数据加载到内存中
+- [x] 预热，将数据加载到内存中
 
-  - [ ] 读取 offset
+  - [x] 读取 offset
+  - [x] 读取 invertIndex
 
-    ```c++
-    unordered_map<int, pair<int, int>> loadOffset(const string& filename) {
-        unordered_map<int, pair<int, int>> offset;
-        ifstream infile(filename, ios::binary);
-        if (!infile.is_open()) {
-            cerr << "Unable to open file for reading: " << filename << "\n";
-            return offset;
-        }
-    
-        // 读取map的大小
-        size_t size;
-        infile.read(reinterpret_cast<char*>(&size), sizeof(size));
-    
-        // 逐个读取map的内容
-        for (size_t i = 0; i < size; ++i) {
-            int docid;
-            int start, length;
-            infile.read(reinterpret_cast<char*>(&docid), sizeof(docid));
-            infile.read(reinterpret_cast<char*>(&start), sizeof(start));
-            infile.read(reinterpret_cast<char*>(&length), sizeof(length));
-            offset[docid] = {start, length};
-        }
-    
-        infile.close();
-        return offset;
-    }
-    ```
+- [x] 关键词全文搜索（召回），找交集
 
-  - [ ] 读取 invertIndex
+- [x] 相似度排序，对比余弦相似度
 
-- [ ] 关键词全文搜索
+  用priority_queue排序
 
-- [ ] 相似度排序
+- [x] 把前十个内容取出来，取出WebPage，放入json,返回给客户端
+
+![](./assets/AI.gif)
 
 ## File structure
 
@@ -144,47 +121,6 @@ C++ 网络编程 线程
 ## Problems
 
 1. Makefile伪目标，可以一次性生成多个可执行文件
-
-   ```makefile
-   # 伪目标：生成所有可执行文件
-   all: bin/Makedict bin/main
-   
-   # 目标：生成 bin/Makedict
-   bin/Makedict: bin/Makedict.o bin/DictProducer.o bin/SplitTool.o
-           g++ bin/Makedict.o bin/DictProducer.o bin/SplitTool.o -o bin/Makedict -g
-   
-   # 目标：生成 bin/Makedict.o
-   bin/Makedict.o: src/Makedict.cc
-           g++ -c src/Makedict.cc -o bin/Makedict.o -I include
-   
-   # 目标：生成 bin/DictProducer.o
-   bin/DictProducer.o: src/DictProducer.cc
-           g++ -c src/DictProducer.cc -o bin/DictProducer.o -I include
-   
-   # 目标：生成 bin/SplitTool.o
-   bin/SplitTool.o: src/SplitTool.cc
-           g++ -c src/SplitTool.cc -o bin/SplitTool.o -I include
-   
-   # 目标: 生成 bin/main
-   bin/main: bin/main.o bin/SearchEngineServer.o bin/KeyRecomander.o
-           g++ bin/main.o bin/SearchEngineServer.o bin/KeyRecomander.o -o bin/main -lwfrest -lworkflow -g
-   
-   # 目标：生成 bin/main.o
-   bin/main.o: src/main.cc
-           g++ -c src/main.cc -o bin/main.o -I include
-   
-   # 目标：生成 bin/SearchEngineServer.o
-   bin/SearchEngineServer.o: src/SearchEngineServer.cc
-           g++ -c src/SearchEngineServer.cc -o bin/SearchEngineServer.o -I include
-   
-   # 目标：生成 bin/KeyRecomander.o
-   bin/KeyRecomander.o: src/KeyRecomander.cc
-           g++ -c src/KeyRecomander.cc -o bin/KeyRecomander.o -I include
-   
-   # 清理命令
-   clean:
-           rm -f bin/*
-   ```
 
 2. 单例模式冲突，即使创建了两个对象，使用的成员函数仍然是最先所创建的对象的
 
@@ -218,7 +154,7 @@ C++ 网络编程 线程
 
    ![排序前](./assets/candidateProcess.png)
 
-   按照最小编辑距离升序，若最小编辑距离相同，则按照热度的降序排列
+   一种可以选择的排序思路是按照最小编辑距离升序，若最小编辑距离相同，则按照热度的降序排列
 
    ```c++
    vector<CandidateResult> KeyRecomander::sortCandidates(vector<CandidateResult> candidates) {
@@ -239,9 +175,9 @@ C++ 网络编程 线程
 
    可以将`usr/local/lib64` 中的 .`so` 文件移动到 `/lib64` 当中
 
-6. 清洗后的pagelib效果
+6. 对 Pagelib 去重的遍历
 
-   添加根节点后，才可以用tinyxml2遍历
+   先添加根节点，再用 tinyxml2 遍历
 
    ```xml
    <doc>
@@ -251,19 +187,9 @@ C++ 网络编程 线程
    	<description>...</description>
    	<content>...</content>
    </doc>
-   <doc>
-   	<docid>2</docid>
-   	<title>...</title>
-   	<link>...</link>
-   	<description>...</description>
-   	<content>...</content>
-   </doc>
-   <doc>
-     ...
-   </doc>
    ```
 
-7. 网页清洗遇到的问题：标签中的文本有特殊字符，可以用vscode 的 xml 拓展检测错误原因，再清洗干净
+7. 网页清洗遇到的问题：标签中的文本有特殊字符，可以用vscode 的 xml 拓展检测错标红的地方，再清洗干净
 
 8. 网页去重遇到的问题：内存会爆
 
@@ -273,10 +199,8 @@ C++ 网络编程 线程
        while (docElement)
        {
    		// 盘等和处理操作
-   
            // 获取下一个 doc 元素
            docElement = docElement->NextSiblingElement("doc");
-   
            // 每处理100个节点，清理内存并暂停
            if (i % 100 == 0)
            {
@@ -294,7 +218,6 @@ C++ 网络编程 线程
                {
                    docElement = docElement->NextSiblingElement("doc");
                }
-               
                // 暂停一小段时间，让系统有机会进行其他操作
                sleep(2);
            }
@@ -452,4 +375,18 @@ C++ 网络编程 线程
    
    ```
 
-   
+10. 框架整体结构变化之后一定要make clean;
+
+11. 防抖技术(debounce)
+
+    ```javascript
+    function debounce(func, wait) {
+        let timeout;
+        return function (...args) {
+           clearTimeout(timeout);
+            timeout = setTimeout(() => func.apply(this, args), wait);
+        };
+    }
+    ```
+
+    
