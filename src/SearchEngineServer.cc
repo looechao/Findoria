@@ -15,6 +15,7 @@ using std::set;
 using std::size_t;
 using std::string;
 using std::vector;
+using namespace tinyxml2;
 
 string urlDecode(const std::string &encoded)
 {
@@ -100,12 +101,44 @@ void SearchEngineServer::handle_webpage_search(const wfrest::HttpReq *req, wfres
     }
 
     set<int> docs = _webPageSearcher.queryDocuments(decoded_query);
-    unordered_map<string, double> queryWeights = _webPageSearcher.calculateTFIDF(_webPageSearcher.splitSentence(decoded_query), docs.size()); 
-    for(auto &word : queryWeights){
+    unordered_map<string, double> queryWeights = _webPageSearcher.calculateTFIDF(_webPageSearcher.splitSentence(decoded_query), docs.size());
+    for (auto &word : queryWeights)
+    {
         cout << "word: " << word.first << " weight: " << word.second << " \n";
     }
-    
+
     vector<pair<int, double>> rankedDocs = _webPageSearcher.rankDocs(docs, queryWeights);
+    // 只保留前十个网页
+    if (rankedDocs.size() > 10)
+    {
+        rankedDocs.resize(10);
+    }
+    nlohmann::json jsonResponse;
+    cout << "webpage: \n";
+    for (auto &doc : rankedDocs)
+    {
+        string webContent = _webPageSearcher.getDocContent("../data/Pagelib.dat", doc.first, _webPageSearcher._offset);
+        XMLDocument xmlDoc;
+        xmlDoc.Parse(webContent.c_str());
+        XMLElement *docElement = xmlDoc.FirstChildElement("doc");
+        if (!docElement)
+        {
+            cerr << "Invalid XML format\n";
+        }
+        const char *docid = docElement->FirstChildElement("docid")->GetText();
+        const char *title = docElement->FirstChildElement("title")->GetText();
+        const char *link = docElement->FirstChildElement("link")->GetText();
+        const char *description = docElement->FirstChildElement("description")->GetText();
+        const char *content = docElement->FirstChildElement("content")->GetText();
+
+        // 构造JSON对象
+        jsonResponse["docid"] = docid ? docid : "";
+        jsonResponse["title"] = title ? title : "";
+        jsonResponse["link"] = link ? link : "";
+        jsonResponse["description"] = description ? description : "";
+        jsonResponse["content"] = content ? content : "";
+        resp->Json(jsonResponse.dump());
+    }
     cout << "\n";
 }
 

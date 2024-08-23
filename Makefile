@@ -20,8 +20,8 @@ bin/SplitTool.o: src/SplitTool.cc
 
 
 # 目标: 生成 bin/main
-bin/main: bin/main.o bin/SearchEngineServer.o bin/KeyRecomander.o bin/WebPageSearcher.o bin/SplitTool.o
-	g++ bin/main.o bin/SearchEngineServer.o bin/KeyRecomander.o bin/WebPageSearcher.o bin/SplitTool.o -o bin/main -lwfrest -lworkflow -g
+bin/main: bin/main.o bin/SearchEngineServer.o bin/KeyRecomander.o bin/WebPageSearcher.o bin/SplitTool.o bin/tinyxml2.o
+	g++ bin/main.o bin/SearchEngineServer.o bin/KeyRecomander.o bin/WebPageSearcher.o bin/SplitTool.o bin/tinyxml2.o -o bin/main -lwfrest -lworkflow -g
 
 # 目标：生成 bin/main.o
 bin/main.o: src/main.cc
