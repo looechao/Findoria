@@ -5,6 +5,7 @@
 #include <string>
 #include <fstream>
 #include <algorithm>
+#include <cmath>
 
 using std::cerr;
 using std::cout;
@@ -12,11 +13,11 @@ using std::ifstream;
 using std::ios;
 using std::pair;
 using std::set;
+using std::set_intersection;
 using std::size_t;
 using std::string;
 using std::unordered_map;
 using std::vector;
-using std::set_intersection;
 
 SplitTool *cnCuttor = new SplitToolCppJieba();
 
@@ -167,7 +168,8 @@ set<int> WebPageSearcher::queryDocuments(const string &sentence)
     set<int> result;
 
     vector<string> words = splitSentence(sentence);
-    for(auto &it : words){
+    for (auto &it : words)
+    {
         cout << it << " ";
     }
     cout << "\n";
@@ -175,7 +177,7 @@ set<int> WebPageSearcher::queryDocuments(const string &sentence)
     // 遍历每个词
     for (const auto &word : words)
     {
-        cout << word << ", 查找该词在倒排索引中的记录\n";
+        cout << "searching word:  " << word << " in invertedIndex\n";
         // 查找该词在倒排索引中的记录
         const auto &it = _invertIndex.find(word);
         if (it != _invertIndex.end())
@@ -206,6 +208,7 @@ set<int> WebPageSearcher::queryDocuments(const string &sentence)
                                  currentDocs.begin(), currentDocs.end(),
                                  inserter(tempResult, tempResult.begin()));
                 result = move(tempResult); // 更新 result
+                cout << "docid has been added\n";
             }
         }
         else
@@ -214,6 +217,90 @@ set<int> WebPageSearcher::queryDocuments(const string &sentence)
             return {};
         }
     }
-
     return result; // 返回同时包含所有词的文档ID集合
+}
+
+unordered_map<string, double> WebPageSearcher::calculateTFIDF(const vector<string> &terms, int totalDocs)
+{
+    std::unordered_map<std::string, double> tfidf;
+    std::unordered_map<std::string, int> termFrequency;
+    // 计算TF
+    for (const auto &term : terms)
+    {
+        termFrequency[term]++;
+    }
+
+    // 计算TF-IDF
+    for (const auto &tf : termFrequency)
+    {
+        double tfValue = static_cast<double>(tf.second) / terms.size();
+        double idfValue = std::log2(static_cast<double>(_offset.size()) / (totalDocs + 1));
+        tfidf[tf.first] = tfValue * idfValue;
+    }
+    return tfidf;
+}
+
+double WebPageSearcher::calculateCosineSimilarity(int docId, const unordered_map<string, double> &queryWeights)
+{
+    double dotProduct = 0.0;
+    double docNorm = 0.0;
+    double queryNorm = 0.0;
+
+    // 遍历每个查询词
+    for (const auto &[queryWord, queryWeight] : queryWeights)
+    {
+        // 查找倒排索引库中该查询词的记录
+        auto it = _invertIndex.find(queryWord);
+        if (it != _invertIndex.end())
+        {
+            // 遍历该查询词在倒排索引库中的所有文档
+            for (const auto &[doc, weight] : it->second)
+            {
+                if (doc == docId)
+                {
+                    // 计算向量积
+                    dotProduct += weight * queryWeight;
+                    // 计算文档向量的平方和
+                    docNorm += weight * weight;
+                }
+            }
+        }
+        // 计算查询向量的平方和
+        queryNorm += queryWeight * queryWeight;
+    }
+
+    // 计算文档向量和查询向量的模
+    docNorm = sqrt(docNorm);
+    queryNorm = sqrt(queryNorm);
+
+    // 防止除以零的情况
+    if (docNorm == 0 || queryNorm == 0)
+    {
+        return 0.0;
+    }
+
+    // 计算并返回余弦相似度
+    return dotProduct / (docNorm * queryNorm);
+}
+
+vector<pair<int, double>> WebPageSearcher::rankDocs(set<int> docs, unordered_map<string, double> &queryWeights)
+{
+    vector<pair<int, double>> docSimilarities;
+    // 计算每个文档和查询的余弦相似度
+    for (int docId : docs)
+    {
+        double cosineSimilarity = calculateCosineSimilarity(docId, queryWeights);
+        docSimilarities.push_back({docId, cosineSimilarity});
+    }
+
+    // 对文档进行排序，按余弦相似度从高到低排序
+    sort(docSimilarities.begin(), docSimilarities.end(), [](const pair<int, double> &a, const pair<int, double> &b)
+         { return a.second > b.second; });
+    // 输出排序后的文档ID和余弦相似度
+    cout << "Sorted documents by cosine similarity:" << "\n";
+    for (const auto &[docId, similarity] : docSimilarities)
+    {
+        cout << "Document ID: " << docId << ", Cosine Similarity: " << similarity << "\n";
+    }
+    return docSimilarities;
 }
