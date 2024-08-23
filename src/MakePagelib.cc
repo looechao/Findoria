@@ -76,13 +76,13 @@ int main()
 {
     string path = "../data/material/web";
     PagelibProcessor pagelibProcessor(path);
-    //pagelibProcessor.storeRawOnDisk("../data/RawPagelib.dat");
-    //pagelibProcessor.cutRedundantPage("../data/RawPagelib.dat", "../data/Pagelib.dat");
-    //removeRawData();
+    pagelibProcessor.storeRawOnDisk("../data/RawPagelib.dat");
+    pagelibProcessor.cutRedundantPage("../data/RawPagelib.dat", "../data/Pagelib.dat");
+    removeRawData();
     pagelibProcessor.createOffsetlib("../data/Pagelib.dat");
     pagelibProcessor.storeOffset("../data/offset.dat");
-    //pagelibProcessor.buildInvertIndexMap();
-    //pagelibProcessor.storeInvertIndexMap("../data/invertIndex.dat");
+    pagelibProcessor.buildInvertIndexMap();
+    pagelibProcessor.storeInvertIndexMap("../data/invertIndex.dat");
     return 0;
 }
 
