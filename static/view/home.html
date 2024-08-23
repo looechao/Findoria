@@ -94,14 +94,23 @@
 
     <main>
         <div class="search-bar">
-            <input type="text" id="search-input" placeholder="请输入搜索内容..." oninput="performRecommend()">
-            <button onclick="performRecommend()">搜索</button>
+            <input type="text" id="search-input" placeholder="请输入搜索内容..." oninput="debouncedPerformRecommend()">
+            <button onclick="performWebPage()">搜索</button>
         </div>
 
         <div class="results" id="results"></div>
     </main>
 
     <script>
+
+        function debounce(func, wait) {
+            let timeout;
+            return function (...args) {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func.apply(this, args), wait);
+            };
+        }
+
         function performRecommend() {
             const query = document.getElementById('search-input').value.trim();
             const resultsContainer = document.getElementById('results');
@@ -129,9 +138,127 @@
                                 const item = document.createElement('div');
                                 item.className = 'result-item';
                                 item.innerHTML = `
-                        <p class="result-title">${word}</p>
-                    `;
+                                <p class="result-title">${word}</p>
+                            `;
                                 resultsContainer.appendChild(item);
+                            });
+                        } else {
+                            resultsContainer.innerHTML = '<p>没有结果</p>';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('发生错误:', error);
+                        resultsContainer.innerHTML = '<p>请不要输入空的字符串</p>';
+                    });
+            }
+        }
+
+        const debouncedPerformRecommend = debounce(performRecommend, 350);
+
+
+        // 将 DeepSeek API 的响应内容插入到结果容器中
+        const deepSeekDiv = document.createElement('div');
+        deepSeekDiv.classList.add('result-item');
+
+        // 创建 DeepSeek API 响应的标题
+        const deepSeekTitle = document.createElement('h3');
+        deepSeekTitle.textContent = "AI智能回答"; // 你可以根据需要修改标题
+        deepSeekDiv.appendChild(deepSeekTitle);
+
+        // 创建 DeepSeek API 响应的描述
+        const deepSeekResponse = document.createElement('p');
+        deepSeekResponse.textContent = "AI正在响应中...."; // 使用从 DeepSeek API 获得的响应
+        deepSeekDiv.appendChild(deepSeekResponse);
+
+
+        function performWebPage() {
+            const query = document.getElementById('search-input').value.trim();
+            const resultsContainer = document.getElementById('results');
+            resultsContainer.innerHTML = ''; // 清空之前的结果
+            if (query) {
+                fetch('http://192.168.31.128:5000/chat', {
+                    method: 'POST', // 使用 POST 方法
+                    headers: {
+                        'Content-Type': 'application/json', // 设置请求头为 JSON
+                    },
+                    body: JSON.stringify({ message: query }) // 将消息放入请求体
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('网络响应异常');
+                        }
+                        return response.json(); // 解析 JSON
+                    })
+                    .then(data => {
+                        console.log('返回的数据:', data); // 打印返回的数据
+                        console.log('生成的消息:', data.response); // 打印生成的消息
+                        //deepSeekResponse.textContent = data.response;
+                        const typingSpeed = 50; //50mm一个字
+                        let index = 0;
+                        deepSeekResponse.textContent = "";
+                        const typingInterval = setInterval(() => {
+                            if (index < data.response.length) {
+                                deepSeekResponse.textContent += data.response[index]; // 添加下一个字符
+                                index++; // 移动到下一个字符
+                            } else {
+                                clearInterval(typingInterval); // 清除定时器
+                            }
+                        }, typingSpeed);
+                    })
+                    .catch(error => {
+                        console.error('发生错误:', error); // 处理错误
+                    });
+            }
+
+
+            if (query) {
+                console.log(`发送请求，查询内容: ${query}`); // 调试信息
+
+                // 发送实际的 AJAX 请求
+                fetch(`http://192.168.31.128:1234/search/webpage?sentence=${encodeURIComponent(query)}`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('网络响应异常');
+                        }
+                        return response.json(); // 解析 JSON
+                    })
+                    .then(data => {
+                        console.log('返回的数据:', data); // 打印返回的数据
+                        // 清空之前的结果
+                        resultsContainer.innerHTML = '';
+                        // 将 DeepSeek API 响应插入结果容器
+                        deepSeekResponse.textContent = "AI正在响应中...."; // 使用从 DeepSeek API 获得的响应
+                        resultsContainer.prepend(deepSeekDiv);
+                        // 检查 data.documents 是否为数组
+                        const documents = data.documents;
+                        if (Array.isArray(documents) && documents.length > 0) {
+                            documents.forEach(item => {
+                                const itemDiv = document.createElement('div');
+                                itemDiv.classList.add('result-item');
+
+                                // 创建标题
+                                const title = document.createElement('h3');
+                                title.innerHTML = `<a href="${item.link}" target="_blank">${item.title}</a>`;
+                                itemDiv.appendChild(title);
+
+                                // 创建描述
+                                const description = document.createElement('p');
+                                description.textContent = item.description;
+                                const limitedDescription = item.description.length > 400 ? item.description.substring(0, 400) + '...' : item.description;
+                                description.textContent = limitedDescription;
+                                itemDiv.appendChild(description);
+
+                                // 创建内容（如果有的话）
+                                if (item.content) {
+                                    const content = document.createElement('p');
+                                    content.textContent = item.content;
+                                    const limitedContent = item.content.length > 400 ? item.content.substring(0, 400) + '...' : item.content;
+                                    content.textContent = limitedContent;
+                                    itemDiv.appendChild(content);
+                                }
+
+                                // 将生成的 HTML 插入结果容器
+                                resultsContainer.appendChild(itemDiv);
                             });
                         } else {
                             resultsContainer.innerHTML = '<p>没有结果</p>';
@@ -144,6 +271,11 @@
             }
         }
     </script>
+
+</body>
+
+</html>
+</script>
 
 </body>
 
