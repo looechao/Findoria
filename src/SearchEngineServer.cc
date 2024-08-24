@@ -74,6 +74,9 @@ void SearchEngineServer::loadStaticSource()
 {
     _httpserver.GET("/home", [](const wfrest::HttpReq *, wfrest::HttpResp *resp)
                     { resp->File("../static/view/home.html"); });
+    _httpserver.GET("/static/assets/logo.png", [](const wfrest::HttpReq *, wfrest::HttpResp * resp){
+        resp->File("../static/assets/logo.png");
+    });
 }
 
 void SearchEngineServer::loadDictionaryData()
@@ -133,6 +136,7 @@ void SearchEngineServer::handle_webpage_search(const wfrest::HttpReq *req, wfres
         {
             cerr << "Invalid XML format \n"
                  << i << "\n";
+            continue;
         }
         const char *docid = docElement->FirstChildElement("docid")->GetText();
         const char *title = docElement->FirstChildElement("title")->GetText();

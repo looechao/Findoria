@@ -193,7 +193,7 @@ void DictProducer::buildCnDict()
 void DictProducer::storeDict(const string &filename)
 {
     // 使用 POSIX 的 open 函数打开文件（如果文件存在则追加）
-    int fd = open(filename.c_str(), O_WRONLY | O_CREAT | O_TRUNC, 0666);
+    int fd = open(filename.c_str(), O_WRONLY | O_CREAT | O_APPEND, 0666);
     if (fd < 0)
     {
         std::cerr << "Error opening file: " << filename << "\n";
@@ -302,7 +302,7 @@ void DictProducer::createIndex(const string &filename)
 void DictProducer::storeIndexDict(const string &filename)
 {
     // 使用 POSIX 的 open 函数打开文件（如果文件存在则追加）
-    int fd = open(filename.c_str(), O_WRONLY | O_CREAT | O_TRUNC, 0666);
+    int fd = open(filename.c_str(), O_WRONLY | O_CREAT | O_APPEND, 0666);
     if (fd < 0)
     {
         cerr << "Error opening file: " << filename << "\n";

@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Goooogle</title>
+    <title>Findoria</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -15,37 +15,58 @@
         }
 
         header {
-            background: #007bff;
-            color: white;
-            padding: 20px;
+            margin-top: 50px;
+            padding: 0px;
+            /* 添加一些内边距 */
             text-align: center;
+            /* 水平居中 */
+        }
+
+        .header-logo {
+            display: block;
+            /* 将图片设置为块级元素 */
+            margin: 0 auto;
+            /* 左右外边距自动实现居中 */
+            width: 300px;
+            /* 设置图片宽度 */
+            height: auto;
+            /* 保持宽高比 */
         }
 
         main {
             padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         .search-bar {
-            margin-bottom: 20px;
+            margin-bottom: 0px;
             text-align: center;
+            width: 80%;
+            max-width: 1000px;
         }
 
         .search-bar input[type="text"] {
-            width: 60%;
+            width: calc(100% - 120px);
             padding: 10px;
             border: 1px solid #ccc;
             border-radius: 5px;
             font-size: 16px;
+            box-sizing: border-box;
         }
 
         .search-bar button {
+            width: 100px;
             padding: 10px 15px;
             border: none;
-            background: #007bff;
+            background: rgb(80, 197, 246);
             color: white;
             border-radius: 5px;
             cursor: pointer;
             font-size: 16px;
+            margin-left: 10px;
+            box-sizing: border-box;
         }
 
         .search-bar button:hover {
@@ -53,7 +74,9 @@
         }
 
         .results {
-            margin-top: 20px;
+            margin-top: 10px;
+            width: 80%;
+            max-width: 1000px;
         }
 
         .result-item {
@@ -71,7 +94,7 @@
 
         .result-title {
             font-size: 18px;
-            color: #007bff;
+            color: #0056b3;
             text-decoration: none;
         }
 
@@ -83,13 +106,19 @@
             font-size: 14px;
             color: #666;
         }
+
+        .title-color {
+            color: rgb(80, 197, 246);
+            /* 设置文字颜色为橙红色 */
+        }
     </style>
 </head>
+
 
 <body>
 
     <header>
-        <h1>Goooogle</h1>
+        <img src="/static/assets/logo.png" alt="Findoria" class="header-logo">
     </header>
 
     <main>
@@ -148,7 +177,7 @@
                     })
                     .catch(error => {
                         console.error('发生错误:', error);
-                        resultsContainer.innerHTML = '<p>请不要输入空的字符串</p>';
+                        resultsContainer.innerHTML = '<p>没有找到关联的推荐词</p>';
                     });
             }
         }
@@ -169,6 +198,7 @@
         const deepSeekResponse = document.createElement('p');
         deepSeekResponse.textContent = "AI正在响应中...."; // 使用从 DeepSeek API 获得的响应
         deepSeekDiv.appendChild(deepSeekResponse);
+        deepSeekTitle.classList.add('title-color'); // 添加 CSS 类
 
 
         function performWebPage() {
@@ -235,16 +265,15 @@
                             documents.forEach(item => {
                                 const itemDiv = document.createElement('div');
                                 itemDiv.classList.add('result-item');
-
                                 // 创建标题
                                 const title = document.createElement('h3');
-                                title.innerHTML = `<a href="${item.link}" target="_blank">${item.title}</a>`;
+                                title.innerHTML = `<a href="${item.link}" target="_blank" style="color: #0056b3";>${item.title}</a>`;
                                 itemDiv.appendChild(title);
 
                                 // 创建描述
                                 const description = document.createElement('p');
                                 description.textContent = item.description;
-                                const limitedDescription = item.description.length > 400 ? item.description.substring(0, 400) + '...' : item.description;
+                                const limitedDescription = item.description.length > 100 ? item.description.substring(0, 100) + '...' : item.description;
                                 description.textContent = limitedDescription;
                                 itemDiv.appendChild(description);
 
@@ -252,7 +281,7 @@
                                 if (item.content) {
                                     const content = document.createElement('p');
                                     content.textContent = item.content;
-                                    const limitedContent = item.content.length > 400 ? item.content.substring(0, 400) + '...' : item.content;
+                                    const limitedContent = item.content.length > 100 ? item.content.substring(0, 100) + '...' : item.content;
                                     content.textContent = limitedContent;
                                     itemDiv.appendChild(content);
                                 }
@@ -261,7 +290,15 @@
                                 resultsContainer.appendChild(itemDiv);
                             });
                         } else {
-                            resultsContainer.innerHTML = '<p>没有结果</p>';
+                            resultsContainer.innerHTML = '';
+                            // 将 DeepSeek API 响应插入结果容器
+                            deepSeekResponse.textContent = "AI正在响应中...."; // 使用从 DeepSeek API 获得的响应
+                            const itemDiv = document.createElement('div');
+                            const title = document.createElement('h3');
+                            title.innerHTML = "没有找到相关网页";
+                            itemDiv.appendChild(title);
+                            resultsContainer.append(itemDiv);
+                            resultsContainer.prepend(deepSeekDiv);
                         }
                     })
                     .catch(error => {

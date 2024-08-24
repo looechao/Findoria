@@ -7,6 +7,7 @@
 
 using std::cerr;
 using std::cout;
+using std::getline;
 using std::ifstream;
 using std::ios;
 using std::pair;
@@ -15,7 +16,6 @@ using std::size_t;
 using std::sort;
 using std::string;
 using std::vector;
-using std::getline;
 
 // 1. 求取一个字符占据的字节数
 size_t nBytesCode(const char ch);
@@ -130,8 +130,11 @@ vector<CandidateResult> KeyRecomander::generateCandidates(vector<string> splited
     {
         if (idx >= 0 && idx < _Dict.size())
         {
-            CandidateResult tmp(_Dict[idx].first, _Dict[idx].second, editDistance(_Dict[idx].first, query));
-            recommendations.emplace_back(tmp);
+            if (_Dict[idx].first.size() >= query.size())
+            {
+                CandidateResult tmp(_Dict[idx].first, _Dict[idx].second, editDistance(_Dict[idx].first, query));
+                recommendations.emplace_back(tmp);
+            }
         }
     }
     cout << "recomeneded words are generated! \n";
@@ -151,7 +154,11 @@ vector<CandidateResult> KeyRecomander::sortCandidates(vector<CandidateResult> ca
              // 若编辑距离相同，则按频率降序排序
              return a._freq > b._freq; // 高频率排在前面
          });
-    return candidates;
+    if (candidates.size() > 10)
+    {
+        candidates.resize(10); // 调整 vector 的大小
+    }
+    return candidates; // 返回调整后的 vector
 }
 
 vector<string> KeyRecomander::split_query(string query)
@@ -189,7 +196,7 @@ vector<string> KeyRecomander::split_query(string query)
     return keywords;
 }
 
-void KeyRecomander::loadDict(const string& filename)
+void KeyRecomander::loadDict(const string &filename)
 {
     ifstream dictFile(filename);
     if (!dictFile.is_open())
@@ -210,7 +217,7 @@ void KeyRecomander::loadDict(const string& filename)
     }
 }
 
-void KeyRecomander::loadIndex(const string& filename)
+void KeyRecomander::loadIndex(const string &filename)
 {
     ifstream indexFile(filename);
     if (!indexFile.is_open())
