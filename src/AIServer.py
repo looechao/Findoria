@@ -5,7 +5,7 @@ from openai import OpenAI
 app = Flask(__name__)
 CORS(app)  # 启用 CORS
 # Initialize the OpenAI client
-client = OpenAI(api_key="enter your key", base_url="https://api.deepseek.com")
+client = OpenAI(api_key="", base_url="https://api.deepseek.com")
 
 @app.route('/chat', methods=['POST'])
 def chat():
@@ -17,7 +17,7 @@ def chat():
     response = client.chat.completions.create(
         model="deepseek-chat",
         messages=[
-            {"role": "system", "content": "a helpful assistant, 回答在300字以内"},
+            {"role": "system", "content": "a helpful assistant, 回答在250字以内, 不要使用markdown语法"},
             {"role": "user", "content": user_message},
         ],
         stream=False
