@@ -1,8 +1,10 @@
-C++ 网络编程 线程
+![logo](./assets/logo.png)
 
-## Roadmap
+[![](https://img.shields.io/badge/Redis-red?style=flat-square&logo=Redis&logoColor=white)](https://github.com/redis/redis) [![](https://img.shields.io/badge/Flask-yellow?style=flat-square&logo=Flask&logoColor=white)](https://github.com/pallets/flask) [![](https://img.shields.io/badge/TinyXML-green?style=flat-square)](https://github.com/leethomason/tinyxml2.git) [![](https://img.shields.io/badge/simhash-black?style=flat-square)](https://github.com/yanyiwu/simhash) [![](https://img.shields.io/badge/cppjieba-blue?style=flat-square)](https://github.com/yanyiwu/cppjieba) [![](https://img.shields.io/badge/openai-green?style=flat-square&logo=Openai)](https://www.openai.com)
 
-### Model1 Preparation
+**Findoria** 是一个智能搜索引擎项目，利用自然语言处理技术和高效算法，为用户提供精准的搜索结果和个性化推荐。项目整合了 CPPjieba 分词、tinyxml 数据处理、Simhash 相似度计算，并通过调用 DeepSeek(chat) 的 API 实现了基于 Python Flask 的大语言模型 AI 回答系统。同时，Findoria 采用了高性能的 Workflow (wfrest) 框架，实现了实时推荐词和推荐网页的功能，致力于构建一个高效、智能的搜索平台。
+
+##### Model1 Preparation
 
 离线阶段准备的是在服务端启动之前就做好的事情，与用户发送请求之后再做大的事情不是同一个程序
 
@@ -44,16 +46,14 @@ C++ 网络编程 线程
   - [x] 读取`vector<pair<string, int>>` 中的每一个单词的所有字符
   - [x] 存储到dictIndex.dat
 
-### Model1 Online Part
+##### Model1 Online Part
 
 - [x] 搭建服务器框架(WFREST[√]  or REACTOR )
 - [x] 预热，将词典和词典索引加载到内存当中，读文件
 - [x] 关键词分解，候选词召回
 - [x] 返回响应
 
-![](./assets/wordCandidate.gif)
-
-### Model2 Preparation
+##### Model2 Preparation
 
 - [x] 数据清洗，生成网页库（依赖`tinyxml`）
 
@@ -88,7 +88,7 @@ C++ 网络编程 线程
                   单词
   ```
 
-### Model2 Online Part
+##### Model2 Online Part
 
 - [x] 预热，将数据加载到内存中
 
@@ -103,7 +103,14 @@ C++ 网络编程 线程
 
 - [x] 把前十个内容取出来，取出WebPage，放入json,返回给客户端
 
-![](./assets/AI.gif)
+![](./assets/demo.gif)
+
+## Optimize
+
+- [ ] 推荐词优化
+- [ ] Redis 优化
+- [ ] WSL 数据结构调整
+- [ ] Workflow 资源池
 
 ## File structure
 
@@ -152,7 +159,7 @@ C++ 网络编程 线程
 
 4. 排序算法：候选词有`频率`和`最小编辑距离`两个主要的维度，需要选择合适的算法对候选词进行排序
 
-   ![排序前](./assets/candidateProcess.png)
+   ![排序前](./assets/candidateProcessed.png)
 
    一种可以选择的排序思路是按照最小编辑距离升序，若最小编辑距离相同，则按照热度的降序排列
 
@@ -388,5 +395,7 @@ C++ 网络编程 线程
         };
     }
     ```
+
+12. 查看网络端口的监听状态
 
     
