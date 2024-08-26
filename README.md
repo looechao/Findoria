@@ -1,6 +1,10 @@
 ![logo](./assets/logo.png)
 
+
+
 [![](https://img.shields.io/badge/Redis-red?style=flat-square&logo=Redis&logoColor=white)](https://github.com/redis/redis) [![](https://img.shields.io/badge/Flask-yellow?style=flat-square&logo=Flask&logoColor=white)](https://github.com/pallets/flask) [![](https://img.shields.io/badge/TinyXML-green?style=flat-square)](https://github.com/leethomason/tinyxml2.git) [![](https://img.shields.io/badge/simhash-black?style=flat-square)](https://github.com/yanyiwu/simhash) [![](https://img.shields.io/badge/cppjieba-blue?style=flat-square)](https://github.com/yanyiwu/cppjieba) [![](https://img.shields.io/badge/openai-green?style=flat-square&logo=Openai)](https://www.openai.com)
+
+
 
 **Findoria** 是一个智能搜索引擎项目，利用自然语言处理技术和高效算法，为用户提供精准的搜索结果和个性化推荐。项目整合了 CPPjieba 分词、tinyxml 数据处理、Simhash 相似度计算，并通过调用 DeepSeek(chat) 的 API 实现了基于 Python Flask 的大语言模型 AI 回答系统。同时，Findoria 采用了高性能的 Workflow (wfrest) 框架，实现了实时推荐词和推荐网页的功能，致力于构建一个高效、智能的搜索平台。
 
